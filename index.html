@@ -317,8 +317,8 @@
   const e = React.createElement;
   const { useState, useEffect, useCallback, useRef } = React;
 
-  const ENTRIES_KEY = 'entries';
-  const LOG_KEY = 'audit_log';
+  // Paste the Web App URL you get from deploying the Google Apps Script (see setup instructions).
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx1ZjZ8JYUIoh3u5_zB7iKRBxXK0Z5Z6neHVV8ZNIF3zBJIdBAKr0We2Trd7VXTL-ue/exec';
   const GROUPS = ['A', 'B', 'C', 'D'];
   const SHIFTS = ['Morning', 'Afternoon', 'Night'];
   const PROCESSES = ['PBDHR', 'FBD', 'HR', 'WWT', 'SUPERVISOR/SHIFT MANAGER', 'CAP1', 'CAP2', 'CAP3', 'CAP4', 'CAP5', 'CAP6'];
@@ -375,15 +375,12 @@
     const load = useCallback(async (silent) => {
       if (!silent) setLoading(true);
       try {
-        const [entRes, logRes] = await Promise.all([
-          window.storage.get(ENTRIES_KEY, true).catch(() => null),
-          window.storage.get(LOG_KEY, true).catch(() => null)
-        ]);
-        const list = entRes && entRes.value ? JSON.parse(entRes.value) : [];
+        const res = await fetch(API_URL + '?action=data&t=' + Date.now());
+        const data = await res.json();
+        const list = Array.isArray(data.entries) ? data.entries : [];
         list.sort((a, b) => (a.date < b.date ? 1 : -1));
         setEntries(list);
-        const logList = logRes && logRes.value ? JSON.parse(logRes.value) : [];
-        setLog(logList);
+        setLog(Array.isArray(data.log) ? data.log : []);
         setLastSynced(Date.now());
       } catch (err) {
         // keep whatever is currently shown
@@ -412,7 +409,11 @@
 
     async function persistEntries(next) {
       try {
-        await window.storage.set(ENTRIES_KEY, JSON.stringify(next), true);
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // keeps this a "simple" request, avoids CORS preflight
+          body: JSON.stringify({ action: 'saveEntries', entries: next })
+        });
       } catch (err) {
         setMsg('Saved locally — sync will retry automatically.');
       }
@@ -422,7 +423,11 @@
       const nextLog = [{ id: uid(), action, detail, ts: Date.now() }, ...logRef.current].slice(0, MAX_LOG);
       setLog(nextLog);
       try {
-        await window.storage.set(LOG_KEY, JSON.stringify(nextLog), true);
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'saveLog', log: nextLog })
+        });
       } catch (err) {
         // non-critical
       }
@@ -651,7 +656,7 @@
           e('button', { type: 'button', className: 'btn-ghost', onClick: handleAdminLock }, 'Lock')
         ),
         e('p', { className: 'hint' },
-          'This log already syncs across everyone who opens it — entries are stored in shared storage, not on one person\'s device, so there\'s no key or account to connect. This page auto-refreshes every few seconds and whenever you return to the tab, or use Refresh now to pull the latest immediately.'
+          'This log syncs through a shared Google Sheet — entries are stored there, not on one person\'s device, so anyone who opens this page sees the same data. This page auto-refreshes every few seconds and whenever you return to the tab, or use Refresh now to pull the latest immediately.'
         ),
         e('div', { className: 'admin-status' },
           e('span', { className: 'dot' }),
