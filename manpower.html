@@ -1,0 +1,680 @@
+<div id="mp-root"></div>
+<style>
+  #mp-root {
+    --bg: #1B2025;
+    --panel: #23292F;
+    --panel-2: #2A3138;
+    --border: #363E46;
+    --text: #EAEDEF;
+    --muted: #8B95A1;
+    --amber: #F5A623;
+    --amber-dim: #7A5A1E;
+    --teal: #4FD1C5;
+    --teal-dim: #245853;
+    --night: #9AA8FF;
+    --night-dim: #3A3E6E;
+    --danger: #E55A5A;
+    --ok: #6FCF97;
+
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 28px 20px 60px;
+    box-sizing: border-box;
+  }
+  #mp-root * { box-sizing: border-box; }
+  #mp-root .wrap { max-width: 1040px; margin: 0 auto; }
+
+  #mp-root .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 6px;
+  }
+  #mp-root h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  #mp-root .sub {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 20px;
+  }
+
+  /* Tabs */
+  #mp-root .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+  #mp-root .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  #mp-root .tab-btn.active { background: var(--amber); color: #201705; }
+  #mp-root .tab-btn:not(.active):hover { color: var(--text); }
+
+  /* Legend / signature coverage key */
+  #mp-root .legend {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  #mp-root .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  #mp-root .legend-swatch { width: 26px; height: 10px; border-radius: 3px; }
+  #mp-root .sw-8 { background: var(--amber); }
+  #mp-root .sw-4a { background: var(--teal); }
+  #mp-root .sw-4b { background: var(--teal); opacity: 0.55; }
+
+  /* Form */
+  #mp-root .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+  #mp-root .panel h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    margin: 0 0 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  #mp-root .panel p.hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0 0 14px;
+    line-height: 1.55;
+  }
+  #mp-root .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 820px) {
+    #mp-root .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  #mp-root label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  #mp-root input, #mp-root select {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 10px;
+    color: var(--text);
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
+  }
+  #mp-root input:focus, #mp-root select:focus {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+    border-color: var(--amber);
+  }
+  #mp-root .form-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  #mp-root button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 7px;
+    padding: 9px 16px;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+  #mp-root button:active { transform: scale(0.98); }
+  #mp-root .btn-primary { background: var(--amber); color: #201705; }
+  #mp-root .btn-primary:hover { opacity: 0.9; }
+  #mp-root .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  #mp-root .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+  #mp-root .form-msg { font-size: 12px; color: var(--muted); }
+
+  /* Toolbar / month filter */
+  #mp-root .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #mp-root .month-filter { display: flex; align-items: center; gap: 8px; }
+  #mp-root .month-filter label { margin: 0; white-space: nowrap; }
+  #mp-root .month-filter input { width: auto; }
+  #mp-root .count { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* Table */
+  #mp-root .table-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: auto;
+  }
+  #mp-root table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  #mp-root th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  #mp-root td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    vertical-align: middle;
+  }
+  #mp-root tr:last-child td { border-bottom: none; }
+  #mp-root tr:hover td { background: rgba(255,255,255,0.02); }
+  #mp-root .date-cell { font-family: 'JetBrains Mono', monospace; color: var(--text); white-space: nowrap; }
+  #mp-root .shift-tag, #mp-root .group-tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  #mp-root .process-tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  #mp-root .shift-tag.Morning { color: var(--amber); border-color: var(--amber-dim); }
+  #mp-root .shift-tag.Afternoon { color: var(--teal); border-color: var(--teal-dim); }
+  #mp-root .shift-tag.Night { color: var(--night); border-color: var(--night-dim); }
+  #mp-root .coverage-bar {
+    display: flex;
+    height: 8px;
+    width: 64px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--panel-2);
+    margin-bottom: 4px;
+  }
+  #mp-root .name-empty { color: var(--muted); font-style: italic; }
+  #mp-root .name-tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  #mp-root .name-pic { background: rgba(111, 207, 151, 0.16); color: var(--ok); border: 1px solid rgba(111, 207, 151, 0.4); }
+  #mp-root .name-r8 { background: rgba(245, 166, 35, 0.16); color: var(--amber); border: 1px solid rgba(245, 166, 35, 0.4); }
+  #mp-root .name-r4a { background: rgba(79, 209, 197, 0.18); color: var(--teal); border: 1px solid rgba(79, 209, 197, 0.4); }
+  #mp-root .name-r4b { background: rgba(154, 168, 255, 0.16); color: var(--night); border: 1px solid rgba(154, 168, 255, 0.4); }
+  #mp-root .row-actions { display: flex; gap: 6px; }
+  #mp-root .icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 9px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+  #mp-root .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+  #mp-root .icon-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+  #mp-root .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+  }
+  #mp-root .empty-state .big { font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: var(--text); margin-bottom: 6px; }
+  #mp-root .status-note { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+  /* Admin tab */
+  #mp-root .admin-status { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  #mp-root .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  #mp-root .log-list { display: flex; flex-direction: column; gap: 0; }
+  #mp-root .log-row {
+    display: flex;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    align-items: baseline;
+  }
+  #mp-root .log-row:last-child { border-bottom: none; }
+  #mp-root .log-time {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    font-size: 11px;
+    white-space: nowrap;
+    width: 128px;
+    flex-shrink: 0;
+  }
+  #mp-root .log-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    height: fit-content;
+  }
+  #mp-root .log-badge.add { background: var(--teal-dim); color: var(--teal); }
+  #mp-root .log-badge.edit { background: var(--amber-dim); color: var(--amber); }
+  #mp-root .log-badge.delete { background: #5A2A2A; color: var(--danger); }
+  #mp-root .log-detail { color: var(--text); }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+(function() {
+  const e = React.createElement;
+  const { useState, useEffect, useCallback, useRef } = React;
+
+  const ENTRIES_KEY = 'entries';
+  const LOG_KEY = 'audit_log';
+  const GROUPS = ['A', 'B', 'C', 'D'];
+  const SHIFTS = ['Morning', 'Afternoon', 'Night'];
+  const PROCESSES = ['PBDHR', 'FBD', 'HR', 'WWT', 'SUPERVISOR/SHIFT MANAGER', 'CAP1', 'CAP2', 'CAP3', 'CAP4', 'CAP5', 'CAP6'];
+  const MAX_LOG = 60;
+  const REFRESH_MS = 8000;
+  const ADMIN_PASSWORD = 'admin123';
+
+  function uid() {
+    return 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function currentMonthValue() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+
+  function emptyForm() {
+    const today = new Date().toISOString().slice(0, 10);
+    return { date: today, group: 'A', shift: 'Morning', process: PROCESSES[0], pic: '', r8: '', r4a: '', r4b: '' };
+  }
+
+  function fmtTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { month: 'short', day: '2-digit' }) + ' ' +
+      d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function CoverageBar({ has8, has4a, has4b }) {
+    return e('div', { className: 'coverage-bar' },
+      has8 && e('div', { style: { flex: 1, background: 'var(--amber)' } }),
+      !has8 && has4a && e('div', { style: { flex: 1, background: 'var(--teal)' } }),
+      !has8 && has4b && e('div', { style: { flex: 1, background: 'var(--teal)', opacity: 0.55 } }),
+      !has8 && !has4a && !has4b && e('div', { style: { flex: 1 } })
+    );
+  }
+
+  function App() {
+    const [tab, setTab] = useState('entries');
+    const [entries, setEntries] = useState([]);
+    const [log, setLog] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [form, setForm] = useState(emptyForm());
+    const [editingId, setEditingId] = useState(null);
+    const [msg, setMsg] = useState('');
+    const [saving, setSaving] = useState(false);
+    const [month, setMonth] = useState(currentMonthValue());
+    const [lastSynced, setLastSynced] = useState(null);
+    const [adminUnlocked, setAdminUnlocked] = useState(false);
+    const [adminPass, setAdminPass] = useState('');
+    const [adminErr, setAdminErr] = useState('');
+    const logRef = useRef(log);
+    logRef.current = log;
+
+    const load = useCallback(async (silent) => {
+      if (!silent) setLoading(true);
+      try {
+        const [entRes, logRes] = await Promise.all([
+          window.storage.get(ENTRIES_KEY, true).catch(() => null),
+          window.storage.get(LOG_KEY, true).catch(() => null)
+        ]);
+        const list = entRes && entRes.value ? JSON.parse(entRes.value) : [];
+        list.sort((a, b) => (a.date < b.date ? 1 : -1));
+        setEntries(list);
+        const logList = logRes && logRes.value ? JSON.parse(logRes.value) : [];
+        setLog(logList);
+        setLastSynced(Date.now());
+      } catch (err) {
+        // keep whatever is currently shown
+      }
+      if (!silent) setLoading(false);
+    }, []);
+
+    useEffect(() => { load(false); }, [load]);
+
+    useEffect(() => {
+      const id = setInterval(() => load(true), REFRESH_MS);
+      return () => clearInterval(id);
+    }, [load]);
+
+    useEffect(() => {
+      function onVisible() {
+        if (document.visibilityState === 'visible') load(true);
+      }
+      document.addEventListener('visibilitychange', onVisible);
+      window.addEventListener('focus', onVisible);
+      return () => {
+        document.removeEventListener('visibilitychange', onVisible);
+        window.removeEventListener('focus', onVisible);
+      };
+    }, [load]);
+
+    async function persistEntries(next) {
+      try {
+        await window.storage.set(ENTRIES_KEY, JSON.stringify(next), true);
+      } catch (err) {
+        setMsg('Saved locally — sync will retry automatically.');
+      }
+    }
+
+    async function pushLog(action, detail) {
+      const nextLog = [{ id: uid(), action, detail, ts: Date.now() }, ...logRef.current].slice(0, MAX_LOG);
+      setLog(nextLog);
+      try {
+        await window.storage.set(LOG_KEY, JSON.stringify(nextLog), true);
+      } catch (err) {
+        // non-critical
+      }
+    }
+
+    function updateField(field, value) {
+      setForm(prev => ({ ...prev, [field]: value }));
+    }
+
+    // Update UI state immediately/synchronously, then persist in the background.
+    // This keeps "Add entry" responsive even if the storage round-trip is slow or fails.
+    function handleSubmit(ev) {
+      ev.preventDefault();
+      if (!form.date) { setMsg('Date is required.'); return; }
+      setMsg('');
+
+      const isEdit = !!editingId;
+      const entryId = isEdit ? editingId : uid();
+      const newEntry = { ...form, id: entryId };
+      const next = isEdit
+        ? entries.map(en => en.id === editingId ? newEntry : en)
+        : [newEntry, ...entries];
+      next.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+      setEntries(next);
+      const summary = `${form.date} · Group ${form.group} · ${form.shift} · ${form.process}`;
+      setForm(emptyForm());
+      setEditingId(null);
+
+      setSaving(true);
+      Promise.resolve()
+        .then(() => persistEntries(next))
+        .then(() => pushLog(isEdit ? 'edit' : 'add', summary))
+        .finally(() => setSaving(false));
+    }
+
+    function handleEdit(entry) {
+      setEditingId(entry.id);
+      setForm({
+        date: entry.date,
+        group: entry.group || 'A',
+        shift: entry.shift || 'Morning',
+        process: entry.process || PROCESSES[0],
+        pic: entry.pic,
+        r8: entry.r8,
+        r4a: entry.r4a,
+        r4b: entry.r4b
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleDelete(entryToDelete) {
+      const next = entries.filter(en => en.id !== entryToDelete.id);
+      setEntries(next);
+      if (editingId === entryToDelete.id) { setEditingId(null); setForm(emptyForm()); }
+      Promise.resolve()
+        .then(() => persistEntries(next))
+        .then(() => pushLog('delete', `${entryToDelete.date} · Group ${entryToDelete.group || '—'} · ${entryToDelete.shift || '—'}`));
+    }
+
+    function cancelEdit() {
+      setEditingId(null);
+      setForm(emptyForm());
+      setMsg('');
+    }
+
+    function handleAdminLogin(ev) {
+      ev.preventDefault();
+      if (adminPass === ADMIN_PASSWORD) {
+        setAdminUnlocked(true);
+        setAdminErr('');
+        setAdminPass('');
+      } else {
+        setAdminErr('Incorrect password.');
+      }
+    }
+
+    function handleAdminLock() {
+      setAdminUnlocked(false);
+      setAdminPass('');
+      setAdminErr('');
+    }
+
+    const filtered = entries.filter(en => en.date && en.date.startsWith(month));
+    const monthLabel = new Date(month + '-01T00:00:00').toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+    return e('div', { className: 'wrap' },
+      e('p', { className: 'eyebrow' }, 'Shift Coverage'),
+      e('h1', null, 'Manpower Replacement Log'),
+      e('p', { className: 'sub' }, 'Track who covers a shift — one full 8-hour replacement, or two 4-hour halves.'),
+
+      e('div', { className: 'tabs' },
+        e('button', { className: 'tab-btn' + (tab === 'entries' ? ' active' : ''), onClick: () => setTab('entries') }, 'Entries'),
+        e('button', { className: 'tab-btn' + (tab === 'admin' ? ' active' : ''), onClick: () => setTab('admin') }, 'Admin')
+      ),
+
+      tab === 'entries' && e(React.Fragment, null,
+        e('div', { className: 'legend' },
+          e('div', { className: 'legend-item' }, e('span', { className: 'legend-swatch sw-8' }), '8hr replacement (full shift)'),
+          e('div', { className: 'legend-item' }, e('span', { className: 'legend-swatch sw-4a' }), '4hr — 1st half'),
+          e('div', { className: 'legend-item' }, e('span', { className: 'legend-swatch sw-4b' }), '4hr — 2nd half')
+        ),
+
+        e('form', { className: 'panel', onSubmit: handleSubmit },
+          e('h2', null, editingId ? 'Edit entry' : 'Add entry'),
+          e('div', { className: 'grid' },
+            e('div', null,
+              e('label', null, 'Date'),
+              e('input', { type: 'date', value: form.date, onChange: ev => updateField('date', ev.target.value), required: true })
+            ),
+            e('div', null,
+              e('label', null, 'Group'),
+              e('select', { value: form.group, onChange: ev => updateField('group', ev.target.value) },
+                GROUPS.map(g => e('option', { key: g, value: g }, g))
+              )
+            ),
+            e('div', null,
+              e('label', null, 'Shift'),
+              e('select', { value: form.shift, onChange: ev => updateField('shift', ev.target.value) },
+                SHIFTS.map(s => e('option', { key: s, value: s }, s))
+              )
+            ),
+            e('div', null,
+              e('label', null, 'Process'),
+              e('select', { value: form.process, onChange: ev => updateField('process', ev.target.value) },
+                PROCESSES.map(p => e('option', { key: p, value: p }, p))
+              )
+            ),
+            e('div', null,
+              e('label', null, 'PIC'),
+              e('input', { type: 'text', placeholder: 'Person in charge', value: form.pic, onChange: ev => updateField('pic', ev.target.value) })
+            ),
+            e('div', null,
+              e('label', null, 'Replacement 8hr'),
+              e('input', { type: 'text', placeholder: 'Name', value: form.r8, onChange: ev => updateField('r8', ev.target.value) })
+            ),
+            e('div', null,
+              e('label', null, 'Replacement 4hr / 1st'),
+              e('input', { type: 'text', placeholder: 'Name', value: form.r4a, onChange: ev => updateField('r4a', ev.target.value) })
+            ),
+            e('div', null,
+              e('label', null, 'Replacement 4hr / 2nd'),
+              e('input', { type: 'text', placeholder: 'Name', value: form.r4b, onChange: ev => updateField('r4b', ev.target.value) })
+            )
+          ),
+          e('div', { className: 'form-actions' },
+            e('button', { type: 'submit', className: 'btn-primary' }, saving ? 'Saving…' : (editingId ? 'Save changes' : 'Add entry')),
+            editingId && e('button', { type: 'button', className: 'btn-ghost', onClick: cancelEdit }, 'Cancel'),
+            msg && e('span', { className: 'form-msg' }, msg)
+          )
+        ),
+
+        e('div', { className: 'toolbar' },
+          e('div', { className: 'month-filter' },
+            e('label', null, 'Month'),
+            e('input', { type: 'month', value: month, onChange: ev => setMonth(ev.target.value) })
+          ),
+          e('span', { className: 'count' }, loading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'entry' : 'entries'} in ${monthLabel}`)
+        ),
+
+        e('div', { className: 'table-wrap' },
+          filtered.length === 0 && !loading
+            ? e('div', { className: 'empty-state' },
+                e('div', { className: 'big' }, `No entries for ${monthLabel}`),
+                e('div', null, 'Add one above, or pick a different month.')
+              )
+            : e('table', null,
+                e('thead', null,
+                  e('tr', null,
+                    e('th', null, 'Coverage'),
+                    e('th', null, 'Date'),
+                    e('th', null, 'Group'),
+                    e('th', null, 'Shift'),
+                    e('th', null, 'Process'),
+                    e('th', null, 'PIC'),
+                    e('th', null, '8hr'),
+                    e('th', null, '4hr / 1st'),
+                    e('th', null, '4hr / 2nd'),
+                    e('th', null, '')
+                  )
+                ),
+                e('tbody', null,
+                  filtered.map(en => e('tr', { key: en.id },
+                    e('td', null, e(CoverageBar, { has8: !!en.r8, has4a: !!en.r4a, has4b: !!en.r4b })),
+                    e('td', { className: 'date-cell' }, en.date),
+                    e('td', null, e('span', { className: 'group-tag' }, en.group || '—')),
+                    e('td', null, e('span', { className: 'shift-tag ' + (en.shift || '') }, en.shift || '—')),
+                    e('td', null, e('span', { className: 'process-tag' }, en.process || '—')),
+                    e('td', null, en.pic ? e('span', { className: 'name-tag name-pic' }, en.pic) : e('span', { className: 'name-empty' }, '—')),
+                    e('td', null, en.r8 ? e('span', { className: 'name-tag name-r8' }, en.r8) : e('span', { className: 'name-empty' }, '—')),
+                    e('td', null, en.r4a ? e('span', { className: 'name-tag name-r4a' }, en.r4a) : e('span', { className: 'name-empty' }, '—')),
+                    e('td', null, en.r4b ? e('span', { className: 'name-tag name-r4b' }, en.r4b) : e('span', { className: 'name-empty' }, '—')),
+                    e('td', null,
+                      e('div', { className: 'row-actions' },
+                        e('button', { type: 'button', className: 'icon-btn', onClick: () => handleEdit(en) }, 'Edit'),
+                        e('button', { type: 'button', className: 'icon-btn danger', onClick: () => handleDelete(en) }, 'Delete')
+                      )
+                    )
+                  ))
+                )
+              )
+        ),
+        e('p', { className: 'status-note' }, 'Entries are shared — everyone sees the latest updates automatically.')
+      ),
+
+      tab === 'admin' && !adminUnlocked && e('div', { className: 'panel' },
+        e('h2', null, 'Admin login'),
+        e('p', { className: 'hint' }, 'Enter the admin password to view sync status and the activity log.'),
+        e('form', { onSubmit: handleAdminLogin },
+          e('div', { className: 'grid', style: { gridTemplateColumns: '220px' } },
+            e('div', null,
+              e('label', null, 'Password'),
+              e('input', { type: 'password', value: adminPass, onChange: ev => setAdminPass(ev.target.value), placeholder: 'Admin password', autoFocus: true })
+            )
+          ),
+          e('div', { className: 'form-actions' },
+            e('button', { type: 'submit', className: 'btn-primary' }, 'Unlock'),
+            adminErr && e('span', { className: 'form-msg', style: { color: 'var(--danger)' } }, adminErr)
+          )
+        )
+      ),
+
+      tab === 'admin' && adminUnlocked && e('div', { className: 'panel' },
+        e('div', { className: 'toolbar', style: { marginBottom: '18px' } },
+          e('h2', { style: { margin: 0 } }, 'Sync status'),
+          e('button', { type: 'button', className: 'btn-ghost', onClick: handleAdminLock }, 'Lock')
+        ),
+        e('p', { className: 'hint' },
+          'This log already syncs across everyone who opens it — entries are stored in shared storage, not on one person\'s device, so there\'s no key or account to connect. This page auto-refreshes every few seconds and whenever you return to the tab, or use Refresh now to pull the latest immediately.'
+        ),
+        e('div', { className: 'admin-status' },
+          e('span', { className: 'dot' }),
+          e('span', { style: { fontSize: '13px' } }, lastSynced ? `Last synced ${fmtTime(lastSynced)}` : 'Syncing…')
+        ),
+        e('div', { className: 'form-actions', style: { marginTop: '10px', marginBottom: '4px' } },
+          e('button', { type: 'button', className: 'btn-ghost', onClick: () => load(false) }, 'Refresh now')
+        ),
+        e('h2', { style: { marginTop: '26px' } }, 'Activity log'),
+        e('p', { className: 'hint' }, 'Most recent additions, edits, and deletions, newest first.'),
+        log.length === 0
+          ? e('div', { className: 'empty-state' }, e('div', { className: 'big' }, 'No activity yet'))
+          : e('div', { className: 'log-list' },
+              log.map(item => e('div', { className: 'log-row', key: item.id },
+                e('span', { className: 'log-time' }, fmtTime(item.ts)),
+                e('span', { className: 'log-badge ' + item.action }, item.action),
+                e('span', { className: 'log-detail' }, item.detail)
+              ))
+            )
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('mp-root')).render(e(App));
+})();
+</script>
